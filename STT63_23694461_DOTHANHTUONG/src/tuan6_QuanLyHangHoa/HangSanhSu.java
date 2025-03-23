@@ -1,22 +1,30 @@
 package tuan6_QuanLyHangHoa;
 
-import java.util.Date;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 
 class HangSanhSu extends HangHoa {
     private String nhaSanXuat;
-    private Date ngayNhapKho;
+    private LocalDate ngayNhapKho;
 
-    public HangSanhSu(String maHang, String tenHang, double donGia, int soLuongTon, String nhaSanXuat, Date ngayNhapKho) {
+    public HangSanhSu(String maHang, String tenHang, double donGia, int soLuongTon, String nhaSanXuat, LocalDate ngayNhapKho) throws IllegalAccessException {
         super(maHang, tenHang, donGia, soLuongTon);
         this.nhaSanXuat = nhaSanXuat;
-        this.ngayNhapKho = ngayNhapKho;
+        setNgayNhapKho(ngayNhapKho);
+    }
+
+    public void setNgayNhapKho(LocalDate ngayNhapKho) {
+        if (ngayNhapKho.isBefore(LocalDate.now())) {
+            this.ngayNhapKho = ngayNhapKho;
+        } else {
+            this.ngayNhapKho = LocalDate.now(); // Gán ngày hiện tại nếu không hợp lệ
+        }
     }
 
     @Override
     public String danhGiaBanBuon() {
-        Date now = new Date();
-        long diff = now.getTime() - ngayNhapKho.getTime();
-        long diffDays = diff / (24 * 60 * 60 * 1000);
+        long diffDays = ChronoUnit.DAYS.between(ngayNhapKho, LocalDate.now());
         if (soLuongTon > 50 && diffDays > 10) {
             return "Bán chậm";
         }
@@ -25,6 +33,13 @@ class HangSanhSu extends HangHoa {
 
     @Override
     public double tinhVAT() {
-        return donGia * 0.1;
+        return donGia * 0.10; // VAT 10%
+    }
+
+    @Override
+    public String toString() {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+        return super.toString() + String.format("| Nhà sản xuất: %-15s| Ngày nhập kho: %-15s",
+                nhaSanXuat, ngayNhapKho.format(formatter));
     }
 }

@@ -1,22 +1,30 @@
 package tuan6_QuanLyLuong;
 
-public class CommissionEmployee extends Employee{
-protected double grossSales, commissionRate;
-    
+public class CommissionEmployee extends Employee {
+    protected double grossSales;
+    protected double commissionRate;
+
     public CommissionEmployee(String fName, String lName, String ssn, double sales, double rate) {
         super(fName, lName, ssn);
         this.grossSales = sales;
         this.commissionRate = rate;
     }
-    
-    @Override
+
     public double earnings() {
-        return grossSales * commissionRate;
+        return grossSales * commissionRate; // Tính lương theo doanh số
     }
-    
+
+    public double getGrossSales() {
+        return grossSales;
+    }
+
+    public double getCommissionRate() {
+        return commissionRate;
+    }
+
     @Override
-    public void display() {
-        System.out.println("Commission Employee: " + firstName + " " + lastName + "\nSSN: " + SSN +
-                "\nGross Sales: " + grossSales + " Commission Rate: " + commissionRate + "\n");
+    public String toString() {
+        return String.format("Commission Employee: %s %s\nSSN: %s\nGross Sales: %.2f\nCommission Rate: %.2f\n",
+                firstName, lastName, SSN, grossSales, commissionRate);
     }
 }

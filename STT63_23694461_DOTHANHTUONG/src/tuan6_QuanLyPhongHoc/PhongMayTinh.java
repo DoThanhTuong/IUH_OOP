@@ -1,7 +1,7 @@
 package tuan6_QuanLyPhongHoc;
 
-public class PhongMayTinh extends Phonghoc{
-	private int soMayTinh;
+public class PhongMayTinh extends Phonghoc {
+	private int soMayTinh; // Số máy tính
 
 	public PhongMayTinh(String maPhong, String dayNha, double dienTich, int soBongDen, int soMayTinh) {
 		super(maPhong, dayNha, dienTich, soBongDen);
@@ -18,14 +18,13 @@ public class PhongMayTinh extends Phonghoc{
 
 	@Override
 	protected boolean checkDatChuan() {
-		if ((soBongDen / dienTich >= 10) && (soMayTinh / dienTich >= 1.5)) {
-			return true;
-		}
-		return false;
+		// Kiểm tra điều kiện đạt chuẩn: đủ ánh sáng và đủ diện tích cho máy tính
+		return (dienTich / soBongDen <= 10) && (dienTich / soMayTinh >= 1.5);
 	}
 
 	@Override
 	public String toString() {
-		return "Phong may tinh";
+		return String.format("Phong May Tinh: %-15s, Dãy Nhà: %-15s, Diện Tích: %.2f\t, Số Bóng Đèn: %d\t, Số Máy Tính: %d\n",
+				getMaPhong(), getDayNha(), getDienTich(), getSoBongDen(), soMayTinh);
 	}
 }

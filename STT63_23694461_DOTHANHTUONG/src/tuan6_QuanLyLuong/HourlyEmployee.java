@@ -1,23 +1,23 @@
 package tuan6_QuanLyLuong;
 
 public class HourlyEmployee extends Employee {
-	private double wage;
-    private int hours;
-    
-    public HourlyEmployee(String fName, String lName, String ssn, double w, int h) {
+    private double hours;
+    private double wage;
+
+    public HourlyEmployee(String fName, String lName, String ssn, double hours, double wage) {
         super(fName, lName, ssn);
-        this.wage = w;
-        this.hours = h;
+        this.hours = hours;
+        this.wage = wage;
     }
-    
+
     @Override
     public double earnings() {
-        return (hours <= 40) ? wage * hours : (40 * wage + (hours - 40) * wage * 1.5);
+        return hours * wage; // Tính lương theo giờ
     }
-    
+
     @Override
-    public void display() {
-        System.out.println("Hourly Employee: " + firstName + " " + lastName + "\nSSN: " + SSN +
-                "\nHourly Wage: " + wage + " Hours Worked: " + hours + "\n");
+    public String toString() {
+        return String.format("Hourly Employee: %s %s\nSSN: %s\nHours: %.2f\nWage: %.2f\n",
+                firstName, lastName, SSN, hours, wage);
     }
 }

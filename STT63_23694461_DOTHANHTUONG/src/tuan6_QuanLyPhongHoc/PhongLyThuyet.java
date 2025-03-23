@@ -1,7 +1,7 @@
 package tuan6_QuanLyPhongHoc;
 
-public class PhongLyThuyet extends Phonghoc{
-	private boolean hasMayChieu;
+public class PhongLyThuyet extends Phonghoc {
+	private boolean hasMayChieu; // Có máy chiếu không
 
 	public PhongLyThuyet(String maPhong, String dayNha, double dienTich, int soBongDen, boolean hasMayChieu) {
 		super(maPhong, dayNha, dienTich, soBongDen);
@@ -18,14 +18,13 @@ public class PhongLyThuyet extends Phonghoc{
 
 	@Override
 	protected boolean checkDatChuan() {
-		if (soBongDen / dienTich >= 10 && hasMayChieu) {
-			return true;
-		}
-		return false;
+		// Kiểm tra điều kiện đạt chuẩn: đủ ánh sáng và có máy chiếu
+		return (dienTich / soBongDen <= 10) && hasMayChieu;
 	}
 
 	@Override
 	public String toString() {
-		return "Phong ly thuyet";
+		return String.format("Phong Ly Thuyet: %-15s, Dãy Nhà: %-15s, Diện Tích: %.2f\t, Số Bóng Đèn: %d\t, Có Máy Chiếu: %-15s\n",
+				getMaPhong(), getDayNha(), getDienTich(), getSoBongDen(), hasMayChieu);
 	}
 }
