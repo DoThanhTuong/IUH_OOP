@@ -7,12 +7,11 @@ public class Main {
     static Scanner sc = new Scanner(System.in);
 
     public static void main(String[] args) {
-        
+        // Thêm vài tài khoản mẫu vào danh sách
         ds.them(new TaiKhoan(1001, "Nguyen Van A", 200000));
         ds.them(new TaiKhoan(1002, "Le Thi B", 500000));
         ds.them(new TaiKhoan(1003, "Tran Van C", 1000000));
 
-        
         int chon;
         do {
             System.out.println("\n--- MENU ---");
@@ -25,41 +24,41 @@ public class Main {
             System.out.print("Moi ban chon: ");
             chon = sc.nextInt();
             try {
-	            switch (chon) {
-	                case 1:
-	                    themTaiKhoan();
-	                    break;
-	                case 2:
-	                    napTien();
-	                    break;
-	                case 3:
-	                    rutTien();
-	                    break;
-	                case 4:
-	                    chuyenTien();
-	                    break;
-	                case 5:
-	                    ds.xuatDanhSach();
-	                    break;
-	                case 0:
-	                    System.out.println("Thoat chuong trinh.");
-	                    break;
-	                default:
-	                    System.out.println("Vui long chon dung chuc nang!");
-	            }
-            }catch (Exception e) {
-            	System.out.println("lỗi");
-			}
+                switch (chon) {
+                    case 1:
+                        themTaiKhoan();
+                        break;
+                    case 2:
+                        napTien();
+                        break;
+                    case 3:
+                        rutTien();
+                        break;
+                    case 4:
+                        chuyenTien();
+                        break;
+                    case 5:
+                        xuatDanhSachTaiKhoan();
+                        break;
+                    case 0:
+                        System.out.println("Thoat chuong trinh.");
+                        break;
+                    default:
+                        System.out.println("Vui long chon dung chuc nang!");
+                }
+            } catch (Exception e) {
+                System.out.println("Loi: " + e.getMessage());
+            }
         } while (chon != 0);
 
         sc.close();
     }
 
-   
+    // Thêm tài khoản mới
     public static void themTaiKhoan() {
         System.out.print("Nhap so tai khoan: ");
         long soTK = sc.nextLong();
-        sc.nextLine(); 
+        sc.nextLine();
         System.out.print("Nhap ten chu tai khoan: ");
         String ten = sc.nextLine();
         System.out.print("Nhap so du ban dau: ");
@@ -74,7 +73,7 @@ public class Main {
         }
     }
 
-    
+    // Nạp tiền vào tài khoản
     public static void napTien() {
         System.out.print("Nhap so tai khoan muon nap: ");
         long soTK = sc.nextLong();
@@ -95,7 +94,7 @@ public class Main {
         }
     }
 
-    
+    // Rút tiền từ tài khoản
     public static void rutTien() {
         System.out.print("Nhap so tai khoan muon rut: ");
         long soTK = sc.nextLong();
@@ -116,7 +115,7 @@ public class Main {
         }
     }
 
-    
+    // Chuyển tiền giữa các tài khoản
     public static void chuyenTien() {
         System.out.print("Nhap so tai khoan gui: ");
         long soTKGui = sc.nextLong();
@@ -146,6 +145,14 @@ public class Main {
             }
         } catch (Exception e) {
             System.out.println("Chuyen tien that bai: " + e.getMessage());
+        }
+    }
+
+    // Xuất danh sách tài khoản
+    public static void xuatDanhSachTaiKhoan() {
+        TaiKhoan[] danhSach = ds.xuatDanhSach();
+        for (TaiKhoan tk : danhSach) {
+            System.out.println(tk);
         }
     }
 }

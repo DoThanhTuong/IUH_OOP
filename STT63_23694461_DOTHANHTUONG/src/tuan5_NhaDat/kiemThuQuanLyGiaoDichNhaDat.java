@@ -1,9 +1,15 @@
 package tuan5_NhaDat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Scanner;
 
+import tuan5_NhaDat.GiaoDichDat.LoaiDat;
+import tuan5_NhaDat.GiaoDichNha.LoaiNha;
+
 public class kiemThuQuanLyGiaoDichNhaDat {
+	private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 	public static Scanner sc = new Scanner(System.in);
 	public static void main(String[] args) {
 		DanhSachGiaoDich ds = new DanhSachGiaoDich();
@@ -42,9 +48,14 @@ public class kiemThuQuanLyGiaoDichNhaDat {
 					xuatDSTheoNgayGD(ds);
 					break;
 				case 9:
-					sortTheoNgayGD(ds);
+					ds.sortTheoNgayGD();
 					break;
 				case 10:
+					ds.sortTheoThanhTien();
+					break;
+				case 11:
+					System.out.printf("Trung bình: %-10f",ds.trungBinhThanhTienGiaoDichDat());
+					break;
 				default: 
 					System.out.println("Lỗi lựa chọn không hợp lệ!!");
 			}
@@ -64,7 +75,7 @@ public class kiemThuQuanLyGiaoDichNhaDat {
 		System.out.println("** 8. Xuất danh sách giao dịch theo ngày giao dịch    **");
 		System.out.println("** 9. Sắp xếp danh sách theo ngày giao dịch           **");
 		System.out.println("** 10. Sắp xếp danh sách theo thành tiền              **");
-		System.out.println("** 11. Trung bình thành tiền của giao dịch đất        **");
+		System.out.println("** 11. Trung bình thành tiền của giao dịch            **");
 		System.out.println("********************************************************");
 	}
 	public static void menuSuaGDDat() {
@@ -90,193 +101,298 @@ public class kiemThuQuanLyGiaoDichNhaDat {
 		System.out.println("** 6. Địa chỉ                                         **");
 		System.out.println("********************************************************");
 	}
-	public static void tieuDeDSGDDat(){
-		System.out.println(String.format("%15s %20s %15s %10s %15s","Mã giao dịch","Ngày giao dịch","Đơn giá","Diện tích","Loại đất"));
-	}
-	public static void tieuDeDSGDNha(){
-		System.out.println(String.format("%15s %20s %15s %10s %15s %20s","Mã giao dịch","Ngày giao dịch","Đơn giá","Diện tích","Loại nhà","Địa chỉ"));
-	}
-	public static void tieuDeDSGD(){
-		System.out.println(String.format("%15s %20s %15s %10s %15s %20s","Mã giao dịch","Ngày giao dịch","Đơn giá","Diện tích","Loại nhà/đất","Địa chỉ(Giao dịch đất)"));
-	}
+
 	public static void themGiaoDich(DanhSachGiaoDich ds) {
-		try {
-			int choice = -1;
-			String maGiaoDich,ngayGiaoDich;
-			double donGia,dienTich;
-			System.out.println("Nhập mã giao dịch"); maGiaoDich = sc.nextLine();
-			if (ds.timKiemGiaoDich(maGiaoDich) == null) {
-				System.out.println("Nhập ngày tháng năm(dd/mm/yyyy): "); ngayGiaoDich = sc.nextLine();
-				System.out.println("Nhập đơn giá: "); donGia = sc.nextDouble();
-				System.out.println("Nhập diện tích: "); dienTich = sc.nextDouble();
-				System.out.println("Nhập [1]Giao dịch đất hoặc [2]Giao dịch nhà: "); 				choice = sc.nextInt();
-				sc.nextLine();
-				if (choice == 1) {
-					GiaoDichDat gdd = new GiaoDichDat();
-					gdd.setMaGiaoDich(maGiaoDich);
-					gdd.setNgayGiaoDich(ngayGiaoDich);
-					gdd.setDonGia(donGia);
-					gdd.setDienTich(dienTich);
-					System.out.println("Nhập loại đất: "); gdd.setLoaiDat(sc.nextLine());
-					if (ds.themGiaoDich(gdd)) {
-						throw new Exception("Thêm giao dịch đất thành công!!");
-					}
-				}else {
-					GiaoDichNha gdn = new GiaoDichNha();
-					gdn.setMaGiaoDich(maGiaoDich);
-					gdn.setNgayGiaoDich(ngayGiaoDich);
-					gdn.setDonGia(donGia);
-					gdn.setDienTich(dienTich);
-					System.out.println("Nhập loại nhà: "); gdn.setLoaiNha(sc.nextLine());
-					System.out.println("Nhập địa chỉ: "); gdn.setDiaChi(sc.nextLine());
-					if (ds.themGiaoDich(gdn)) {
-						throw new Exception("Thêm giao dịch nhà thành công");
-					}
-				}
-			}else {
-				throw new Exception("Mã giao dịch trùng!!");
-			}
-		} catch (Exception e) {
-			System.out.println(e.getMessage());
-		}
+	    try {
+	        int choice = -1;
+	        String maGiaoDich, ngayGiaoDich;
+	        double donGia, dienTich;
+	
+	        // Nhập mã giao dịch
+	        System.out.print("Nhập mã giao dịch: ");
+	        maGiaoDich = sc.nextLine();
+	
+	        // Kiểm tra nếu mã giao dịch đã tồn tại
+	        if (ds.timKiemGiaoDich(maGiaoDich) == null) {
+	            // Nhập ngày giao dịch
+	            System.out.print("Nhập ngày tháng năm (dd/MM/yyyy): ");
+	            ngayGiaoDich = sc.nextLine();
+	
+	            // Kiểm tra ngày tháng hợp lệ
+	            if (!isValidDate(ngayGiaoDich)) {
+	                throw new Exception("Ngày giao dịch không hợp lệ!");
+	            }
+	
+	            // Nhập đơn giá
+	            System.out.print("Nhập đơn giá: ");
+	            donGia = sc.nextDouble();
+	            if (donGia <= 0) {
+	                throw new Exception("Đơn giá phải lớn hơn 0!");
+	            }
+	
+	            // Nhập diện tích
+	            System.out.print("Nhập diện tích: ");
+	            dienTich = sc.nextDouble();
+	            if (dienTich <= 0) {
+	                throw new Exception("Diện tích phải lớn hơn 0!");
+	            }
+	
+	            // Nhập lựa chọn giao dịch (1: Giao dịch đất, 2: Giao dịch nhà)
+	            System.out.print("Nhập [1] Giao dịch đất hoặc [2] Giao dịch nhà: ");
+	            choice = sc.nextInt();
+	            sc.nextLine(); // Đọc dòng mới sau khi nhập số
+	
+	            // Thêm giao dịch đất
+	            if (choice == 1) {
+	                System.out.print("Nhập loại đất (A/B/C): ");
+	                String loaiDatInput = sc.nextLine();
+	                GiaoDichDat.LoaiDat loaiDat = GiaoDichDat.LoaiDat.valueOf(loaiDatInput.toUpperCase());
+	
+	                GiaoDichDat gdd = new GiaoDichDat(maGiaoDich, ngayGiaoDich, donGia, dienTich, loaiDat);
+	
+	                // Thêm giao dịch đất vào danh sách
+	                if (ds.themGiaoDich(gdd)) {
+	                    System.out.println("Thêm giao dịch đất thành công!!");
+	                } else {
+	                    throw new Exception("Không thể thêm giao dịch đất!");
+	                }
+	            }
+	            // Thêm giao dịch nhà
+	            else if (choice == 2) {
+	                System.out.print("Nhập loại nhà (CAO_CAP/THUONG): ");
+	                String loaiNhaInput = sc.nextLine();
+	                GiaoDichNha.LoaiNha loaiNha = GiaoDichNha.LoaiNha.valueOf(loaiNhaInput.toUpperCase());
+	
+	                System.out.print("Nhập địa chỉ: ");
+	                String diaChi = sc.nextLine();
+	
+	                GiaoDichNha gdn = new GiaoDichNha(maGiaoDich, ngayGiaoDich, donGia, dienTich, loaiNha, diaChi);
+	
+	                // Thêm giao dịch nhà vào danh sách
+	                if (ds.themGiaoDich(gdn)) {
+	                    System.out.println("Thêm giao dịch nhà thành công!!");
+	                } else {
+	                    throw new Exception("Không thể thêm giao dịch nhà!");
+	                }
+	            } else {
+	                throw new Exception("Lựa chọn không hợp lệ! Chỉ có thể chọn 1 hoặc 2.");
+	            }
+	        } else {
+	            throw new Exception("Mã giao dịch trùng!!");
+	        }
+	    } catch (Exception e) {
+	        System.out.println("Lỗi: " + e.getMessage());
+	    }
 	}
+	
+	// Hàm kiểm tra ngày có đúng định dạng (dd/MM/yyyy) hay không
+	public static boolean isValidDate(String date) {
+	    try {
+	        LocalDate.parse(date, DATE_FORMATTER);
+	        return true;
+	    } catch (Exception e) {
+	        return false;
+	    }
+	}
+
 	public static void xoaGiaoDich(DanhSachGiaoDich ds) {
-		try {
-			String maGiaoDich;
-			System.out.println("Nhập mã giao dịch cần xóa: "); maGiaoDich = sc.nextLine();
-			GiaoDich gd = ds.timKiemGiaoDich(maGiaoDich);
-			System.out.println("Bạn có chắc muốn xóa giao dịch không?[y/n]:");
-			if (sc.nextLine().equalsIgnoreCase("y")) {
-				ds.xoaGiaoDich(gd);
-			}else {
-				throw new Exception("Bạn đã giữ lại giao dịch thành công!!");
-			}
-		} catch (Exception e) {
-			System.out.println(e.getMessage());
-		}
+	    try {
+	        String maGiaoDich;
+	        System.out.println("Nhập mã giao dịch cần xóa: ");
+	        maGiaoDich = sc.nextLine();
+	        
+	        // Tìm kiếm giao dịch theo mã
+	        GiaoDich gd = ds.timKiemGiaoDich(maGiaoDich);
+	        
+	        // Kiểm tra nếu giao dịch không tồn tại
+	        if (gd == null) {
+	            throw new Exception("Giao dịch không tồn tại!");
+	        }
+
+	        // Hỏi người dùng có chắc chắn muốn xóa không
+	        System.out.println("Bạn có chắc muốn xóa giao dịch không? [y/n]: ");
+	        String confirmation = sc.nextLine();
+
+	        if (confirmation.equalsIgnoreCase("y")) {
+	            // Thực hiện xóa giao dịch
+	            if (ds.xoaGiaoDich(gd)) {
+	                System.out.println("Xóa giao dịch thành công!");
+	            } else {
+	                throw new Exception("Không thể xóa giao dịch!");
+	            }
+	        } else {
+	            System.out.println("Bạn đã hủy bỏ việc xóa giao dịch.");
+	        }
+	    } catch (Exception e) {
+	        // Hiển thị thông báo lỗi nếu có
+	        System.out.println("Lỗi: " + e.getMessage());
+	    }
 	}
+
 	public static void suaGiaoDich(DanhSachGiaoDich ds) {
-		try {
-			int choice = -1;
-			String maGiaoDich;
-			System.out.println("Nhập mã giao dịch cần sửa: "); maGiaoDich = sc.nextLine();
-			GiaoDich gd = ds.timKiemGiaoDich(maGiaoDich);
-			if (ds.timKiemViTriGiaoDich(maGiaoDich) != -1) {
-				System.out.println("Thông tin giao dịch đất trước khi sửa");
-				if (gd instanceof GiaoDichDat) {
-					GiaoDichDat gdd = (GiaoDichDat) gd;
-					tieuDeDSGDDat();
-					System.out.println(gdd);
-					menuSuaGDDat();
-					System.out.println("Nhập lựa chọn: "); choice = sc.nextInt();
-					sc.nextLine();
-					while (choice != 0) {
-						switch (choice) {
-							case 0:
-								System.out.println("Thoát thành công!!");
-								break;
-							case 1:
-								System.out.println("Nhập mã giao dịch:");
-								gdd.setMaGiaoDich(sc.nextLine());
-								break;
-							case 2:
-								System.out.println("Nhập ngày giao dịch:");
-								gdd.setNgayGiaoDich(sc.nextLine());
-								break;
-							case 3:
-								System.out.println("Nhập đơn giá:");
-								gdd.setDonGia(sc.nextDouble());
-								break;
-							case 4:
-								System.out.println("Nhập diện tích: ");
-								gdd.setDienTich(sc.nextDouble());
-								break;
-							case 5:
-								System.out.println("Nhập loại đất: ");
-								gdd.setLoaiDat(sc.nextLine());
-								break;
-							default:
-								System.out.println("Lỗi lựa chọn không hợp lệ!");
-						}
-					}
-				}else {
-					GiaoDichNha gdn = (GiaoDichNha) gd;
-					System.out.println("Thông tin giao dịch đất trước khi sửa");
-					tieuDeDSGDNha();
-					System.out.println(gdn);
-					menuSuaGDNha();
-					System.out.println("Nhập lựa chọn: "); choice = sc.nextInt();
-					sc.nextLine();
-					while (choice != 0) {
-						switch (choice) {
-						case 0:
-							System.out.println("Thoát thành công!!");
-							break;
-						case 1:
-							System.out.println("Nhập mã giao dịch:");
-							gdn.setMaGiaoDich(sc.nextLine());
-							break;
-						case 2:
-							System.out.println("Nhập ngày giao dịch:");
-							gdn.setNgayGiaoDich(sc.nextLine());
-							break;
-						case 3:
-							System.out.println("Nhập đơn giá:");
-							gdn.setDonGia(sc.nextDouble());
-							break;
-						case 4:
-							System.out.println("Nhập diện tích: ");
-							gdn.setDienTich(sc.nextDouble());
-							break;
-						case 5:
-							System.out.println("Nhập loại nhà: ");
-							gdn.setLoaiNha(sc.nextLine());
-							break;
-						case 6:
-							System.out.println("Nhập địa chỉ: ");
-							gdn.setDiaChi(sc.nextLine());
-							break;
-						default:
-								System.out.println("Lỗi lựa chọn không hợp lệ!");
-						}
-					}
-				}
-			}else {
-				throw new Exception("Lỗi mã chuyến xe không tồn tại");
-			}
-		} catch (Exception e) {
-			System.out.println(e.getMessage());
-		}
+	    try {
+	        int choice = -1;
+	        String maGiaoDich;
+	        System.out.println("Nhập mã giao dịch cần sửa: ");
+	        maGiaoDich = sc.nextLine();
+	        
+	        // Kiểm tra nếu giao dịch tồn tại
+	        GiaoDich gd = ds.timKiemGiaoDich(maGiaoDich);
+	        
+	        if (gd != null) {
+	            // Kiểm tra xem là giao dịch đất hay giao dịch nhà
+	            if (gd instanceof GiaoDichDat) {
+	                GiaoDichDat gdd = (GiaoDichDat) gd;
+	                System.out.println("Thông tin giao dịch đất trước khi sửa:");
+	             
+	                System.out.println(gdd);
+	                menuSuaGDDat();
+	                System.out.println("Nhập lựa chọn: ");
+	                choice = sc.nextInt();
+	                sc.nextLine();
+	                
+	                while (choice != 0) {
+	                    switch (choice) {
+	                        case 0:
+	                            System.out.println("Thoát thành công!!");
+	                            break;
+	                        case 1:
+	                            System.out.println("Nhập mã giao dịch:");
+	                            gdd.setMaGiaoDich(sc.nextLine());
+	                            break;
+	                        case 2:
+	                            System.out.println("Nhập ngày giao dịch:");
+	                            LocalDate ngayGiaoDich = LocalDate.parse(sc.nextLine(), DATE_FORMATTER);
+	                            gdd.setNgayGiaoDich(ngayGiaoDich);
+	                            break;
+	                        case 3:
+	                            System.out.println("Nhập đơn giá:");
+	                            gdd.setDonGia(sc.nextDouble());
+	                            break;
+	                        case 4:
+	                            System.out.println("Nhập diện tích: ");
+	                            gdd.setDienTich(sc.nextDouble());
+	                            break;
+	                        case 5:
+	                            // Nhập loại đất (kiểm tra hợp lệ)
+	                            System.out.println("Nhập loại đất (A/B/C): ");
+	                            String loaiDatInput = sc.nextLine();
+	                            try {
+	                                GiaoDichDat.LoaiDat loaiDat = GiaoDichDat.LoaiDat.valueOf(loaiDatInput.toUpperCase());
+	                                gdd.setLoaiDat(loaiDat);
+	                            } catch (IllegalArgumentException e) {
+	                                System.out.println("Loại đất không hợp lệ. Vui lòng nhập A, B hoặc C.");
+	                            }
+	                            break;
+	                        default:
+	                            System.out.println("Lỗi lựa chọn không hợp lệ!");
+	                    }
+	                    menuSuaGDDat();
+	                    System.out.println("Nhập lựa chọn: ");
+	                    choice = sc.nextInt();
+	                    sc.nextLine();
+	                }
+	            } else if (gd instanceof GiaoDichNha) {
+	                GiaoDichNha gdn = (GiaoDichNha) gd;
+	                System.out.println("Thông tin giao dịch nhà trước khi sửa:");
+	             
+	                System.out.println(gdn);
+	                menuSuaGDNha();
+	                System.out.println("Nhập lựa chọn: ");
+	                choice = sc.nextInt();
+	                sc.nextLine();
+	                
+	                while (choice != 0) {
+	                    switch (choice) {
+	                        case 0:
+	                            System.out.println("Thoát thành công!!");
+	                            break;
+	                        case 1:
+	                            System.out.println("Nhập mã giao dịch:");
+	                            gdn.setMaGiaoDich(sc.nextLine());
+	                            break;
+	                        case 2:
+	                        	System.out.println("Nhập ngày giao dịch:");
+	                            LocalDate ngayGiaoDich = LocalDate.parse(sc.nextLine(), DATE_FORMATTER);
+	                            gdn.setNgayGiaoDich(ngayGiaoDich);
+	                            break;
+	                        case 3:
+	                            System.out.println("Nhập đơn giá:");
+	                            gdn.setDonGia(sc.nextDouble());
+	                            break;
+	                        case 4:
+	                            System.out.println("Nhập diện tích: ");
+	                            gdn.setDienTich(sc.nextDouble());
+	                            break;
+	                        case 5:
+	                            // Nhập loại nhà (kiểm tra hợp lệ)
+	                            System.out.println("Nhập loại nhà (CAO_CAP/THUONG): ");
+	                            String loaiNhaInput = sc.nextLine();
+	                            try {
+	                                GiaoDichNha.LoaiNha loaiNha = GiaoDichNha.LoaiNha.valueOf(loaiNhaInput.toUpperCase());
+	                                gdn.setLoaiNha(loaiNha);
+	                            } catch (IllegalArgumentException e) {
+	                                System.out.println("Loại nhà không hợp lệ. Vui lòng nhập CAO_CAP hoặc THUONG.");
+	                            }
+	                            break;
+	                        case 6:
+	                            System.out.println("Nhập địa chỉ: ");
+	                            gdn.setDiaChi(sc.nextLine());
+	                            break;
+	                        default:
+	                            System.out.println("Lỗi lựa chọn không hợp lệ!");
+	                    }
+	                    menuSuaGDNha();
+	                    System.out.println("Nhập lựa chọn: ");
+	                    choice = sc.nextInt();
+	                    sc.nextLine();
+	                }
+	            }
+	        } else {
+	            throw new Exception("Giao dịch không tồn tại.");
+	        }
+	    } catch (Exception e) {
+	        System.out.println("Lỗi: " + e.getMessage());
+	    }
 	}
+
 	public static void nhapCung(DanhSachGiaoDich ds) {
-		try {
-			GiaoDichDat gdd = new GiaoDichDat("GD001","23/02/2018",500000,100,"A");
-			GiaoDichNha gdn = new GiaoDichNha("GD002","10/05/2015",1000000,500,"cao cấp","Quận 3");
-			GiaoDichDat gdd1 = new GiaoDichDat("GD003","20/06/2010",5000000,200,"A");
-			GiaoDichNha gdn1 = new GiaoDichNha("GD004","10/05/2025",10000000,300,"thường","Quận 10");
-			ds.themGiaoDich(gdd);
-			ds.themGiaoDich(gdn);
-			ds.themGiaoDich(gdd1);
-			ds.themGiaoDich(gdn1);
-			throw new Exception("Nhập cứng thành công!!");
-		} catch (Exception e) {
-			System.out.println(e.getMessage());
-		}
+	    try {
+	        // Thêm giao dịch cứng vào danh sách
+	        GiaoDichDat gdd = new GiaoDichDat("GD001", "23/02/2018", 500000, 100,LoaiDat.A );
+	        GiaoDichNha gdn = new GiaoDichNha("GD002", "10/05/2015", 1000000, 500,LoaiNha.CAO_CAP , "Quận 3");
+	        GiaoDichDat gdd1 = new GiaoDichDat("GD003", "20/06/2010", 5000000, 200, LoaiDat.B);
+	        GiaoDichNha gdn1 = new GiaoDichNha("GD004", "10/05/2025", 10000000, 300, LoaiNha.THUONG, "Quận 10");
+	        
+	        // Thêm các giao dịch vào danh sách
+	        ds.themGiaoDich(gdd);
+	        ds.themGiaoDich(gdn);
+	        ds.themGiaoDich(gdd1);
+	        ds.themGiaoDich(gdn1);
+
+	        // Thông báo thành công mà không cần sử dụng ngoại lệ
+	        System.out.println("Nhập cứng các giao dịch thành công!");
+	    } catch (Exception e) {
+	        System.out.println("Lỗi khi thêm giao dịch: " + e.getMessage());
+	    }
 	}
+	
 	public static void xuatDSGDĐat(DanhSachGiaoDich ds) {
-		tieuDeDSGDDat();
-		for (GiaoDichDat gdd : ds.getDSGDD()) {
+	
+		for (GiaoDichDat gdd : ds.getDSGiaoDichDat()) {
 			System.out.println(gdd);
 		}
 	}
+	
 	public static void xuatDSGDNha(DanhSachGiaoDich ds) {
-		tieuDeDSGDNha();
-		for (GiaoDichNha gdn : ds.getDSGDN()) {
+		
+		for (GiaoDichNha gdn : ds.getDSGiaoDichNha()) {
 			System.out.println(gdn);
 		}
 	}
+	
 	public static void xuatDS(DanhSachGiaoDich ds) {
-		tieuDeDSGD();
+		
 		for (GiaoDich gd : ds.getDS()) {
 			if (gd instanceof GiaoDichDat) {
 				System.out.println((GiaoDichDat)gd);
@@ -285,16 +401,17 @@ public class kiemThuQuanLyGiaoDichNhaDat {
 			}
 		}
 	}
+	
 	public static void xuatDSTheoNgayGD(DanhSachGiaoDich ds) {
 		try {
 			System.out.println("Nhập ngày bắt đầu(dd/mm/yyyy): ");
 			String ngayBD = sc.nextLine();
 			System.out.println("Nhập ngày kết thúc(dd/mm/yyyy): ");
 			String ngayKT = sc.nextLine();
-			if (DanhSachGiaoDich.compareDate(ngayBD, ngayKT) == 1) {
+			if (ds.getDSTheoNgayGD(ngayBD, ngayKT) == null) {
 				throw new Exception("Lỗi ngày bắt đầu lớn hơn ngày kết thúc!");
 			}else {
-				tieuDeDSGD();
+			
 				for (GiaoDich gd : ds.getDSTheoNgayGD(ngayBD, ngayKT)) {
 					if (gd instanceof GiaoDichDat) {
 						System.out.println((GiaoDichDat)gd);
@@ -307,11 +424,5 @@ public class kiemThuQuanLyGiaoDichNhaDat {
 			System.out.println(e.getMessage());
 		}
 	}
-	public static void sortTheoNgayGD(DanhSachGiaoDich ds) {
-		Collections.sort(ds.getDS(), new Comparator<GiaoDich>() {
-            public int compare(GiaoDich gd1, GiaoDich gd2) {
-                return DanhSachGiaoDich.compareDate(gd1.getNgayGiaoDich(), gd2.getNgayGiaoDich());
-            }
-        });
-	}
+	
 }

@@ -1,10 +1,11 @@
 package tuan5_KeThua_ChuyenXe;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 public class DanhSachChuyenXe {
     //attributes
-    ArrayList luuCacLoaiDL;
     ArrayList<ChuyenXe> ds;
     //constructors
     public DanhSachChuyenXe(){
@@ -62,5 +63,28 @@ public class DanhSachChuyenXe {
     }
     public ArrayList<ChuyenXe> getDS(){
         return ds;
+    }
+    //Collections.sort(): Phương thức này sử dụng Collections.sort()
+    // để sắp xếp danh sách theo một tiêu chí so sánh được định nghĩa trong Comparator<...>.
+    //compareTo() là một phương thức trong lớp String, dùng để so sánh chuỗi (tên tài xế) theo thứ tự từ điển.
+    //Phương thức này sẽ sắp xếp danh sách chuyến xe (ds.getDS()) theo tên tài xế theo thứ tự từ điển (a-z).
+    public void sortTheoTen() {
+        Collections.sort(ds, new Comparator<ChuyenXe>() {
+            public int compare(ChuyenXe xe1, ChuyenXe xe2) {
+                return xe1.getTenTaiXe().compareTo(xe2.getTenTaiXe());
+            }
+        });
+    }
+    //Phương thức compare() nhận hai đối tượng ChuyenXe và so sánh chúng theo doanh thu.
+    public void sortTheoDoanhThu() {
+        Collections.sort(ds, new Comparator<ChuyenXe>() {
+            @Override
+            public int compare(ChuyenXe xe1, ChuyenXe xe2) {
+                // So sánh theo doanh thu
+                return Double.compare(xe1.getDoanhThu(), xe2.getDoanhThu());
+
+            }
+        });
+
     }
 }

@@ -2,6 +2,8 @@ package tuan3_hangThucPham;
 
 import java.util.ArrayList;
 
+import tuan3_dangKyXe.Xe;
+
 public class DanhSachHangTP {
     // Danh sách hàng thực phẩm
     private ArrayList<HangThucPham> danhSachHTP;
@@ -12,37 +14,32 @@ public class DanhSachHangTP {
     }
 
     // Phương thức thêm hàng thực phẩm
-    public void themHTP(HangThucPham hTP) {
-        danhSachHTP.add(hTP);
-        System.out.println("Đã thêm hàng thành công với mã: " + hTP.getMaHang());
+    public boolean themHTP(HangThucPham hTP) {
+    	for (HangThucPham x : danhSachHTP) {
+            if (x.getMaHang().equalsIgnoreCase(hTP.getMaHang())) {
+                return false; // Xe đã tồn tại
+            }
+        }
+    	danhSachHTP.add(hTP);
+        return true;
     }
 
     // Phương thức xóa hàng thực phẩm theo mã
     public boolean xoaHTP(String maHTP) {
         for (HangThucPham hTP : danhSachHTP) {
             if (hTP.getMaHang().equalsIgnoreCase(maHTP)) {
-                danhSachHTP.remove(hTP);
-                System.out.println("Đã xóa hàng có mã: " + maHTP);
-                return true;
+                return danhSachHTP.remove(hTP);
             }
         }
-        System.out.println("Không tìm thấy hàng có mã: " + maHTP);
         return false;
     }
-
+    // Phương thức kiểm tra danh sách có rỗng hay không
+    public boolean hienThiDanhSachHTP() {
+        return !danhSachHTP.isEmpty();
+    }
     // Phương thức hiển thị danh sách hàng thực phẩm
-    public void hienThiDanhSachHTP() {
-    	 if (danhSachHTP.isEmpty()) {
-            System.out.println("Danh sách hàng thực phẩm hiện đang trống.");
-        } else {
-            System.out.println("Danh sách các hàng thực phẩm:");
-            System.out.printf("%-20s %-20s %-20s %-20s %-20s %-20s\n","Mã hàng","Tên hàng","Đơn giá","Ngày sản xuất","Ngày hết hạn","Hết hạn");
-            System.out.println("============================================================================================================");
-           
-            for (HangThucPham hTP : danhSachHTP) {
-                System.out.println(hTP);
-            }
-        }
+    public ArrayList<HangThucPham> getDanhSachHTP() {
+        return this.danhSachHTP;
     }
 
     // Phương thức tìm hàng thực phẩm theo mã
@@ -52,7 +49,6 @@ public class DanhSachHangTP {
                 return hTP;
             }
         }
-        System.out.println("Không tìm thấy hàng có mã: " + maHTP);
         return null;
     }
 }

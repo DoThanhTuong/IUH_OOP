@@ -1,6 +1,5 @@
 package tuan4_bai12_CD;
 
-import java.util.InputMismatchException;
 import java.util.Scanner;
 
 public class Main {
@@ -17,12 +16,13 @@ public class Main {
             try {
                 switch (choice) {
                     case 1:
-                        System.out.print("Nhập số lượng đĩa CD: ");
+                    	System.out.print("Nhập số lượng đĩa CD mới: ");
                         int n = sc.nextInt();
-                        cdList = new CDList(n);
+
+                        // Thêm các CD mới vào danh sách hiện tại
                         for (int i = 0; i < n; i++) {
                             System.out.println("Nhập thông tin CD thứ " + (i + 1) + ":");
-                            cdList.addCD(nhapThongTin(sc));
+                            cdList.addCD(nhapThongTin(sc));  // Thêm vào danh sách hiện có
                         }
                         break;
                     case 2:
@@ -39,7 +39,15 @@ public class Main {
 
                     case 3:
                         System.out.println("Danh sách CD:");
-                        cdList.hienThiCD();
+                        CD[] cds = cdList.hienThiCD(); // Lấy mảng các CD
+                        if (cds.length == 0) {
+                            System.out.println("Danh sách CD hiện đang trống.");
+                        } else {
+                        	System.out.printf("%-10s %-18s %-12s %-10s\n", "maCD", "tuaCD", "soBaiHat", "giaThanh");
+                            for (CD cd : cds) {
+                                System.out.println(cd); // Hiển thị thông tin từng CD trong mảng
+                            }
+                        }
                         break;
 
                     case 4:
@@ -57,30 +65,53 @@ public class Main {
                         break;
 
                     case 6:
-                        System.out.println("Tổng giá thành của các CD: " + cdList.totalGiaThanh());
-                        break;
-
-                    case 7:
-                        System.out.print("Nhập mã CD cần tìm: ");
-                        int maCDTim = sc.nextInt();
-                        CD foundCD = cdList.findCDByCode(maCDTim);
-                        if (foundCD != null) {
-                            System.out.println("Tìm thấy: " + foundCD.toString());
+                        double[] sum = new double[1];
+                        if (cdList.totalGiaThanh(sum)) {
+                            System.out.println("Tổng giá thành của các CD: " + sum[0]);
                         } else {
-                            System.out.println("Không tìm thấy CD với mã đã cho.");
+                            System.out.println("Danh sách CD trống.");
                         }
                         break;
 
+                    case 7:
+                    	System.out.print("Nhập mã CD cần tìm: ");
+                    	int maCDTim = sc.nextInt();
+                    	CD foundCD = cdList.findCDByI(maCDTim);  // Tìm CD theo mã
+
+                    	if (foundCD != null) {  // Kiểm tra nếu tìm thấy CD
+                    	    System.out.println("Tìm thấy CD với mã: " + maCDTim);
+                    	    System.out.printf("\n%-10s %-18s %-12s %-10s\n", "maCD", "tuaCD", "soBaiHat", "giaThanh");
+                    	    System.out.println(foundCD);  // In ra thông tin CD
+                    	} else {
+                    	    System.out.println("Không tìm thấy CD với mã đã cho.");
+                    	}
+
+                        break;
+
                     case 8:
-                        cdList.sortDescendingByGiaThanh();
-                        System.out.println("Danh sách sau khi sắp xếp giảm dần theo giá thành:");
-                        cdList.hienThiCD();
+                        if (cdList.sortDescendingByGiaThanh()) {
+                            System.out.println("Danh sách CD đã được sắp xếp giảm dần theo giá thành:");
+                            System.out.printf("\n%-10s %-18s %-12s %-10s\n", "maCD", "tuaCD", "soBaiHat", "giaThanh");
+                            CD[] sortedCDs = cdList.hienThiCD();
+                            for (CD cd : sortedCDs) {
+                                System.out.println(cd);
+                            }
+                        } else {
+                            System.out.println("Không thể sắp xếp vì danh sách không đủ CD.");
+                        }
                         break;
 
                     case 9:
-                        cdList.sortAscendingByTuaCD();
-                        System.out.println("Danh sách sau khi sắp xếp tăng dần theo tựa CD:");
-                        cdList.hienThiCD();
+                        if (cdList.sortAscendingByTuaCD()) {
+                            System.out.println("Danh sách CD đã được sắp xếp tăng dần theo tựa CD:");
+                            System.out.printf("\n%-10s %-18s %-12s %-10s\n", "maCD", "tuaCD", "soBaiHat", "giaThanh");
+                            CD[] sortedCDs = cdList.hienThiCD();
+                            for (CD cd : sortedCDs) {
+                                System.out.println(cd);
+                            }
+                        } else {
+                            System.out.println("Không thể sắp xếp vì danh sách không đủ CD.");
+                        }
                         break;
 
                     case 10:
@@ -90,9 +121,6 @@ public class Main {
                     default:
                         System.out.println("Lựa chọn không hợp lệ.");
                 }
-//            } catch (InputMismatchException e) {
-//                System.out.println("Lỗi: Vui lòng nhập đúng kiểu dữ liệu.");
-//                sc.nextLine(); // Clear invalid input
             } catch (Exception e) {
                 System.out.println("Lỗi: " + e.getMessage());
             }

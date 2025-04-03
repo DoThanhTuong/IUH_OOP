@@ -6,7 +6,6 @@ public class CDList {
     private CD[] list;
     private int count;
 
-    
     public CDList(int n) {
         if (n <= 0) {
             throw new IllegalArgumentException("Capacity must be a positive number.");
@@ -14,47 +13,26 @@ public class CDList {
         list = new CD[n];
         count = 0;
     }
+    public int getCount() {
+    	return count ;
+    }
 
-    
     public boolean addCD(CD cd) {
-        if (cd == null) {
-            throw new IllegalArgumentException("CD cannot be null.");
+        if (cd == null || findCDByCode(cd.getMaCD())) {
+            return false;
         }
         if (count >= list.length) {
-        	int newlist = list.length * 2; 
-            list = Arrays.copyOf(list, newlist); 
-        }
-        if (findCDByCode(cd.getMaCD()) != null) {
-            return false; 
+            list = Arrays.copyOf(list, list.length + 10);
         }
         list[count++] = cd;
         return true;
     }
 
-   
-    public void hienThiCD() {
-        if (count <= 0) {
-            System.out.println("Danh sách CD hiện đang trống.");
-        } else {
-            System.out.println("Danh sách các CD:");
-            System.out.printf("%-10s %-20s %-15s %-10s\n", "MÃ CD", "Tựa CD", "Số bài hát", "Giá Thành");
-            System.out.println("==============================================================");
-            for (int i = 0; i < count; i++) {
-                System.out.println(list[i]);
-            }
-        }
+    public boolean isEmpty() {
+        return count == 0;
     }
 
-    
-    public int getCount() {
-        return count;
-    }
-
-    
     public boolean removeCDByCode(int maCD) {
-        if (count == 0) {
-            return false; 
-        }
         int index = -1;
         for (int i = 0; i < count; i++) {
             if (list[i].getMaCD() == maCD) {
@@ -62,39 +40,43 @@ public class CDList {
                 break;
             }
         }
-        if (index == -1) {
-            return false; 
-        }
-        
+        if (index == -1) return false;
+
         for (int i = index; i < count - 1; i++) {
             list[i] = list[i + 1];
         }
-        list[count - 1] = null;
-        count--;
+        list[--count] = null;
         return true;
     }
 
-    
-    public double totalGiaThanh() {
-        double sum = 0;
+    public boolean totalGiaThanh(double[] sum) {
+        if (count == 0) return false;
+        sum[0] = 0;
         for (int i = 0; i < count; i++) {
-            sum += list[i].getGiaThanh();
+            sum[0] += list[i].getGiaThanh();
         }
-        return sum;
+        return true;
     }
 
-    
-    public CD findCDByCode(int maCD) {
+    public boolean findCDByCode(int maCD) {
         for (int i = 0; i < count; i++) {
             if (list[i].getMaCD() == maCD) {
-                return list[i];
+                return true;
             }
         }
-        return null;
+        return false;
+    }
+    public CD findCDByI(int maCD) {
+        for (int i = 0; i < count; i++) {
+            if (list[i].getMaCD() == maCD) {
+                return list[i];  // Trả về đối tượng CD nếu tìm thấy
+            }
+        }
+        return null;  // Trả về null nếu không tìm thấy
     }
 
-    
-    public void sortDescendingByGiaThanh() {
+    public boolean sortDescendingByGiaThanh() {
+        if (count <= 1) return false;
         for (int i = 0; i < count - 1; i++) {
             for (int j = i + 1; j < count; j++) {
                 if (list[i].getGiaThanh() < list[j].getGiaThanh()) {
@@ -104,10 +86,11 @@ public class CDList {
                 }
             }
         }
+        return true;
     }
 
-    
-    public void sortAscendingByTuaCD() {
+    public boolean sortAscendingByTuaCD() {
+        if (count <= 1) return false;
         for (int i = 0; i < count - 1; i++) {
             for (int j = i + 1; j < count; j++) {
                 if (list[i].getTuaCD().compareToIgnoreCase(list[j].getTuaCD()) > 0) {
@@ -117,5 +100,17 @@ public class CDList {
                 }
             }
         }
+        return true;
+    }
+
+    // Hàm xuất danh sách CD, trả về một mảng các đối tượng CD
+    public CD[] hienThiCD() {
+        if (count == 0) {
+            return new CD[0]; // Trả về mảng rỗng nếu không có CD nào
+        }
+
+        CD[] result = new CD[count];
+        System.arraycopy(list, 0, result, 0, count); // Sao chép các đối tượng CD vào mảng mới
+        return result;
     }
 }

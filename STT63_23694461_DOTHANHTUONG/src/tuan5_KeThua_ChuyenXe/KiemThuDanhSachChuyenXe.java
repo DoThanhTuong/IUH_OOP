@@ -39,10 +39,10 @@ public class KiemThuDanhSachChuyenXe {
                     xuatDS(ds);
                     break;
                 case 8:
-                    sortTheoTen(ds);
+                    ds.sortTheoTen();
                     break;
                 case 9:
-                    sortTheoDoanhThu(ds);
+                    ds.sortTheoDoanhThu();
                     break;
                 default:
                     System.out.println("Lỗi lựa chọn không hợp lệ!!");
@@ -275,27 +275,5 @@ public class KiemThuDanhSachChuyenXe {
             System.out.println(xe);
         }
     }
-    //Collections.sort(): Phương thức này sử dụng Collections.sort()
-    // để sắp xếp danh sách theo một tiêu chí so sánh được định nghĩa trong Comparator<...>.
-    //compareTo() là một phương thức trong lớp String, dùng để so sánh chuỗi (tên tài xế) theo thứ tự từ điển.
-    //Phương thức này sẽ sắp xếp danh sách chuyến xe (ds.getDS()) theo tên tài xế theo thứ tự từ điển (a-z).
-    public static void sortTheoTen(DanhSachChuyenXe ds) {
-        Collections.sort(ds.getDS(), new Comparator<ChuyenXe>() {
-            public int compare(ChuyenXe xe1, ChuyenXe xe2) {
-                return xe1.getTenTaiXe().compareTo(xe2.getTenTaiXe());
-            }
-        });
-    }
-    //Phương thức compare() nhận hai đối tượng ChuyenXe và so sánh chúng theo doanh thu.
-    public static void sortTheoDoanhThu(DanhSachChuyenXe ds) {
-        Collections.sort(ds.getDS(), new Comparator<ChuyenXe>() {
-            @Override
-            public int compare(ChuyenXe xe1, ChuyenXe xe2) {
-                // So sánh theo doanh thu
-                return Double.compare(xe1.getDoanhThu(), xe2.getDoanhThu());
-
-            }
-        });
-
-    }
+   
 }

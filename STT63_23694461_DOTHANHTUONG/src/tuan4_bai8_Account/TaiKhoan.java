@@ -8,23 +8,23 @@ public class TaiKhoan {
     private String ten;
     private double soDu;
 
-    
-    private static final double PHI_CHUYEN = 0.02;
+    private static final double PHI_CHUYEN = 0.02; // Phí chuyển tiền cố định
 
-   
+    // Constructor mặc định
     public TaiKhoan() {
         this.soTaiKhoan = 999999;
-        this.ten = "chua xac dinh";
-        this.soDu = 50000;
+        this.ten = "Chưa xác định";
+        this.soDu = 50000; // Số dư tối thiểu là 50000
     }
 
-   
+    // Constructor với các tham số
     public TaiKhoan(long soTaiKhoan, String ten, double soDu) {
         setSoTaiKhoan(soTaiKhoan);
         setTen(ten);
         setSoDu(soDu);
     }
 
+    // Getter và Setter
     public long getSoTaiKhoan() {
         return soTaiKhoan;
     }
@@ -45,7 +45,7 @@ public class TaiKhoan {
         if (ten != null && !ten.trim().isEmpty()) {
             this.ten = ten;
         } else {
-            this.ten = "chua xac dinh";
+            this.ten = "Chưa xác định";
         }
     }
 
@@ -57,11 +57,11 @@ public class TaiKhoan {
         if (soDu >= 50000) {
             this.soDu = soDu;
         } else {
-            this.soDu = 50000;
+            this.soDu = 50000; // Đảm bảo số dư tối thiểu là 50000
         }
     }
 
-    
+    // Nạp tiền vào tài khoản
     public boolean napTien(double soTien) {
         if (soTien > 0) {
             soDu += soTien;
@@ -70,7 +70,7 @@ public class TaiKhoan {
         return false;
     }
 
-    
+    // Rút tiền từ tài khoản
     public boolean rutTien(double soTien) {
         if (soTien > 0 && soTien <= soDu) {
             soDu -= soTien;
@@ -79,28 +79,28 @@ public class TaiKhoan {
         return false;
     }
 
-    
+    // Chuyển tiền từ tài khoản này sang tài khoản khác
     public boolean transfer(TaiKhoan accNhan, double soTien) throws Exception {
         if (accNhan == null) {
-            throw new Exception("Tai khoan nhan khong ton tai!");
+            throw new Exception("Tài khoản nhận không tồn tại!");
         }
         if (soTien <= 0) {
-            throw new Exception("So tien phai > 0!");
+            throw new Exception("Số tiền phải > 0!");
         }
 
-       
+        // Tính tổng tiền cần chuyển, bao gồm phí chuyển
         double tongTra = soTien + soTien * PHI_CHUYEN;
 
         if (tongTra <= this.soDu) {
-            accNhan.napTien(soTien); 
-            this.rutTien(tongTra);   
+            accNhan.napTien(soTien);  // Nạp tiền vào tài khoản nhận
+            this.rutTien(tongTra);    // Rút tiền từ tài khoản gửi
             return true;
         } else {
-            throw new Exception("So du khong du de chuyen!");
+            throw new Exception("Số dư không đủ để chuyển!");
         }
     }
 
-  
+    // Phương thức để xuất thông tin tài khoản dưới dạng chuỗi
     @Override
     public String toString() {
         Locale localeVN = new Locale("vi", "VN");

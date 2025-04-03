@@ -5,7 +5,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class HangThucPham {
-	
     private final String maHang; // Không cho phép sửa
     private String tenHang;
     private double donGia;
@@ -13,33 +12,30 @@ public class HangThucPham {
     private Date ngayHetHan;
 
     // Giá trị mặc định
- 
     private static final String TEN_HANG_MAC_DINH = "Tên hàng mặc định";
     private static final double DON_GIA_MAC_DINH = 1.0;
 
     // Định dạng ngày
- 
     private static final SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
 
     // Constructor đầy đủ tham số
     public HangThucPham(String maHang, String tenHang, double donGia, Date ngaySanXuat, Date ngayHetHan) {
-        if (maHang == null || maHang.isEmpty()) {
-        	
+        if (maHang == null || maHang.trim().isEmpty()) {
             throw new IllegalArgumentException("Mã hàng không được để trống!");
         }
-        this.maHang = maHang;
+        this.maHang = maHang.trim();
         setTenHang(tenHang);
         setDonGia(donGia);
         setNgaySanXuat(ngaySanXuat);
         setNgayHetHan(ngayHetHan);
     }
 
-    // Constructor với tham số là mã hàng
+    // Constructor với tham số mã hàng
     public HangThucPham(String maHang) {
-        if (maHang == null || maHang.isEmpty()) {
+        if (maHang == null || maHang.trim().isEmpty()) {
             throw new IllegalArgumentException("Mã hàng không được để trống!");
         }
-        this.maHang = maHang;
+        this.maHang = maHang.trim();
         this.tenHang = TEN_HANG_MAC_DINH;
         this.donGia = DON_GIA_MAC_DINH;
     }
@@ -50,11 +46,7 @@ public class HangThucPham {
     }
 
     public void setTenHang(String tenHang) {
-        if (tenHang == null || tenHang.isEmpty()) {
-            this.tenHang = TEN_HANG_MAC_DINH;
-        } else {
-            this.tenHang = tenHang;
-        }
+        this.tenHang = (tenHang == null || tenHang.trim().isEmpty()) ? TEN_HANG_MAC_DINH : tenHang.trim();
     }
 
     // Getter và Setter cho đơn giá
@@ -63,11 +55,7 @@ public class HangThucPham {
     }
 
     public void setDonGia(double donGia) {
-        if (donGia > 0) {
-            this.donGia = donGia;
-        } else {
-            this.donGia = DON_GIA_MAC_DINH;
-        }
+        this.donGia = (donGia > 0) ? donGia : DON_GIA_MAC_DINH;
     }
 
     // Getter và Setter cho ngày sản xuất
@@ -99,24 +87,22 @@ public class HangThucPham {
 
     // Kiểm tra hàng đã hết hạn chưa
     public boolean daHetHan() {
-        if (ngayHetHan == null) return false;
-        return ngayHetHan.before(new Date());
+        return ngayHetHan != null && ngayHetHan.before(new Date());
     }
 
     public String getMaHang() {
-		return maHang;
-	}
+        return maHang;
+    }
 
-	// Phương thức toString
+    // Phương thức toString
     @Override
     public String toString() {
-    	
         DecimalFormat decimalFormat = new DecimalFormat("#,###.00");
         String donGiaFormat = decimalFormat.format(donGia);
-        String ngaySanXuatFormat = (ngaySanXuat == null) ? "N/A" : dateFormat.format(ngaySanXuat);
-        String ngayHetHanFormat = (ngayHetHan == null) ? "N/A" : dateFormat.format(ngayHetHan);
+        String ngaySanXuatFormat = (ngaySanXuat == null) ? "Chưa có" : dateFormat.format(ngaySanXuat);
+        String ngayHetHanFormat = (ngayHetHan == null) ? "Chưa có" : dateFormat.format(ngayHetHan);
 
-        return String.format("%-20s %-20s %-20s %-20s %-20s %-20s",
+        return String.format("%-15s %-20s %-15s %-15s %-15s %-10s",
                 maHang, tenHang, donGiaFormat, ngaySanXuatFormat, ngayHetHanFormat, daHetHan() ? "Có" : "Không");
     }
 }
